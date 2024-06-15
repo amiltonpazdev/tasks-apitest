@@ -3,6 +3,7 @@ package br.com.tasks.apitest;
 import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 public class APITest {
@@ -42,6 +43,31 @@ public class APITest {
 			.statusCode(400)
 			.body("message", CoreMatchers.is("Due date must not be in past"))
 		;
+	}
+	
+	@Test
+	public void deveRemoverTarefaComSucesso() {
+		
+		//inserir tarefa
+		Integer id = RestAssured.given()
+		.body("{\"task\" : \"Teste para remoção\",\"dueDate\" : \"2024-06-30\"}")
+		.contentType(ContentType.JSON)
+		.when().post("/todo")
+		.then()
+		//.log().all()
+			.statusCode(201)
+			.extract().path("id")
+		;
+		
+		System.out.println(id);
+		
+		//remover tarefa
+		RestAssured.given()
+		.when()
+			.delete("/todo/" + id)
+			.then()
+				.statusCode(204);
+			
 	}
 }
 	
